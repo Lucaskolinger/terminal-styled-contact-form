@@ -74,22 +74,22 @@
     }
   };
 
-  const handleSubmit = () => {
-    let textIsValid = validateText();
-    if (textIsValid) {
-      const formData = new FormData(formElement);
+  // const handleSubmit = () => {
+  //   let textIsValid = validateText();
+  //   if (textIsValid) {
+  //     const formData = new FormData(formElement);
 
-      fetch("/", {
-        method: "POST",
-        headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        body: new URLSearchParams(formData.toString()),
-      })
-        .then(() => console.log("Form successfully submitted"))
-        .catch((error) => alert(error));
-    } else {
-      showTextError = true;
-    }
-  };
+  //     fetch("/", {
+  //       method: "POST",
+  //       headers: { "Content-Type": "application/x-www-form-urlencoded" },
+  //       body: new URLSearchParams(formData.toString()),
+  //     })
+  //       .then(() => console.log("Form successfully submitted"))
+  //       .catch((error) => alert(error));
+  //   } else {
+  //     showTextError = true;
+  //   }
+  // };
 </script>
 
 <article class="terminal-card">
@@ -112,15 +112,16 @@
   <form
     data-netlify="true"
     bind:this={formElement}
-    on:submit|preventDefault={handleSubmit}
-    action=""
+    name="contact"
+    method="POST"
   >
+    <input type="hidden" name="form-name" value="contact" />
     <div class="name-input">
       <p>~what's your name?</p>
-      <input type="text" bind:value={message.name} autofocus />
-      <button on:click|preventDefault={onNameSubmit}
-        ><Icon icon="icon-park-solid:enter-key-one" /></button
-      >
+      <input type="text" name="name" bind:value={message.name} autofocus />
+      <div on:click={onNameSubmit}>
+        <Icon icon="icon-park-solid:enter-key-one" />
+      </div>
     </div>
     {#if showNameError}
       <div class="error">I bet your name has more than one letter</div>
@@ -129,13 +130,14 @@
       <div class="mail-input">
         <p>~what's your e-mail?</p>
         <input
-          type="text"
+          type="email"
+          name="mail"
           bind:this={mailInputElement}
           bind:value={message.email}
         />
-        <button on:click|preventDefault={onMailSubmit}
-          ><Icon icon="icon-park-solid:enter-key-one" /></button
-        >
+        <div on:click={onMailSubmit}>
+          <Icon icon="icon-park-solid:enter-key-one" />
+        </div>
       </div>
       {#if showMailError}
         <div class="error">
@@ -158,7 +160,7 @@
           bind:this={textInputElement}
         />
       </div>
-      <input type="submit" />
+      <button type="submit">Submit</button>
     {/if}
   </form>
 </article>

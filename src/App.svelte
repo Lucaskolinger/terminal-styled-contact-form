@@ -11,33 +11,34 @@
 
   let mailInputElement;
   let textInputElement;
+  let formElement;
   let showMailInput = false;
   let showTextInput = false;
   let showMailError = false;
   let showTextError = false;
   let showNameError = false;
 
-  let message = { name: "", email: "", text: ""}
+  let message = { name: "", email: "", text: "" };
 
   const onNameSubmit = () => {
-     let nameIsValid = validateName();
-        if (nameIsValid) {
-          showMailInput = true;
-          setTimeout(() => {
-            mailInputElement.focus();
-          }, 1);
-        }
-  }
+    let nameIsValid = validateName();
+    if (nameIsValid) {
+      showMailInput = true;
+      setTimeout(() => {
+        mailInputElement.focus();
+      }, 1);
+    }
+  };
 
   const onMailSubmit = () => {
-     let mailIsValid = validateMail();
-        if (mailIsValid) {
-          showTextInput = true;
-          setTimeout(() => {
-            textInputElement.focus();
-          }, 1);
-        }
-  }
+    let mailIsValid = validateMail();
+    if (mailIsValid) {
+      showTextInput = true;
+      setTimeout(() => {
+        textInputElement.focus();
+      }, 1);
+    }
+  };
 
   const validateName = () => {
     if (message.name.trim().length < 2) {
@@ -75,8 +76,16 @@
 
   const handleSubmit = () => {
     let textIsValid = validateText();
-    if (textIsValid) {   
-      console.log(message)
+    if (textIsValid) {
+      const formData = new FormData(formElement);
+
+      fetch("/", {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: new URLSearchParams(formData.toString()),
+      })
+        .then(() => console.log("Form successfully submitted"))
+        .catch((error) => alert(error));
     } else {
       showTextError = true;
     }
@@ -99,14 +108,23 @@
     <button class="system-btn green" />
     <p class="top-line">~contact lucas kolinger</p>
   </div>
+
+  <form
+    data-netlify="true"
+    bind:this={formElement}
+    on:submit|preventDefault={handleSubmit}
+    action=""
+  >
     <div class="name-input">
       <p>~what's your name?</p>
-      <input type="text" bind:value={message.name} autofocus>
-      <button on:click={onNameSubmit}><Icon icon="icon-park-solid:enter-key-one"/></button>
+      <input type="text" bind:value={message.name} autofocus />
+      <button on:click|preventDefault={onNameSubmit}
+        ><Icon icon="icon-park-solid:enter-key-one" /></button
+      >
     </div>
-     {#if showNameError}
-        <div class="error">I bet your name has more than one letter</div>
-      {/if}
+    {#if showNameError}
+      <div class="error">I bet your name has more than one letter</div>
+    {/if}
     {#if showMailInput}
       <div class="mail-input">
         <p>~what's your e-mail?</p>
@@ -115,23 +133,34 @@
           bind:this={mailInputElement}
           bind:value={message.email}
         />
-         <button on:click={onMailSubmit}><Icon icon="icon-park-solid:enter-key-one"/></button>
+        <button on:click|preventDefault={onMailSubmit}
+          ><Icon icon="icon-park-solid:enter-key-one" /></button
+        >
       </div>
       {#if showMailError}
-        <div class="error">Your email is too short or doesn't contain crucial characters</div>
+        <div class="error">
+          Your email is too short or doesn't contain crucial characters
+        </div>
       {/if}
     {/if}
 
     {#if showTextInput}
       <div class="text-input">
         <p>~how can I help you?</p>
-          {#if showTextError}
-      <div class="error">Please write a bit more</div>
-      {/if}
-        <textarea name="Text"  cols="30" rows="5" bind:value={message.text} bind:this={textInputElement} ></textarea>
+        {#if showTextError}
+          <div class="error">Please write a bit more</div>
+        {/if}
+        <textarea
+          name="Text"
+          cols="30"
+          rows="5"
+          bind:value={message.text}
+          bind:this={textInputElement}
+        />
       </div>
-      <button on:click={handleSubmit}>Submit your message</button>
+      <input type="submit" />
     {/if}
+  </form>
 </article>
 
 <style>
